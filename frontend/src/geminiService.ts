@@ -77,7 +77,7 @@ export const geminiService = {
           tagline: sku.tagline,
           reason: `Based on your interest in ${sku.bundleTargets[0]?.replace('sku-', '').replace('-', ' ')}`,
           nextStart: nextCohort?.startDate ?? new Date(),
-          deliveryMode: nextCohort?.deliveryMode ?? primaryVariant?.deliveryMode ?? sku.deliveryMode,
+          deliveryMode: nextCohort?.deliveryMode ?? sku.deliveryMode,
         }
       })
 
