@@ -80,7 +80,10 @@ export function CommunityHub({ communities, activeCommunityId, onSelectCommunity
         <header className="rounded-3xl border border-teal-200 bg-white p-8 shadow-lg shadow-teal-500/10">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-teal-500">Community Hub</p>
           <h1 className="mt-2 font-display text-3xl text-slate-900">{activeCommunity.name}</h1>
-          <p className="mt-2 text-sm text-slate-600">{activeCommunity.description}</p>
+          <p className="mt-2 text-sm text-slate-600">
+            {activeCommunity.description} This circle is the go-to-market engine for every cohort we run—stay close to catch the
+            next activation first.
+          </p>
           <div className="mt-4 flex flex-wrap items-center gap-3 text-xs">
             <span className="rounded-full bg-teal-50 px-3 py-1 font-semibold text-teal-600">Cadence: {activeCommunity.aiAgentConfig.cadenceMinutes * 60} sec pulses</span>
             <button
@@ -91,6 +94,48 @@ export function CommunityHub({ communities, activeCommunityId, onSelectCommunity
             </button>
           </div>
         </header>
+
+        {activeCommunity.upcomingEvents.length > 0 && (
+          <div className="rounded-3xl border border-amber-100 bg-white p-6 shadow-lg shadow-amber-200/40">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <h2 className="font-display text-xl text-slate-900">Upcoming & live community events</h2>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-500">Community-led GTM</p>
+            </div>
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              {activeCommunity.upcomingEvents.slice(0, 4).map((event) => (
+                <article
+                  key={event.id}
+                  className="flex flex-col gap-2 rounded-2xl border border-amber-100 bg-amber-50/60 p-4 text-xs text-slate-600"
+                >
+                  <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-amber-600">
+                    {event.status === 'live' ? 'Live now' : 'On deck'}
+                  </p>
+                  <h3 className="text-sm font-semibold text-slate-900">{event.title}</h3>
+                  <p>{event.description}</p>
+                  <dl className="space-y-1">
+                    <div className="flex justify-between">
+                      <dt>Starts</dt>
+                      <dd>{formatDateTime(event.startsAt)}</dd>
+                    </div>
+                    <div className="flex justify-between">
+                      <dt>Location</dt>
+                      <dd>{event.location}</dd>
+                    </div>
+                    {event.relatedSkuId && (
+                      <div className="flex justify-between">
+                        <dt>Featured SKU</dt>
+                        <dd className="uppercase">{event.relatedSkuId.replace('sku-', '').split('-').join(' ')}</dd>
+                      </div>
+                    )}
+                  </dl>
+                  <span className="inline-flex w-fit items-center gap-2 rounded-full bg-white px-3 py-1 font-semibold text-amber-600">
+                    {event.deliveryMode} · {event.format}
+                  </span>
+                </article>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60">
           <nav className="flex flex-wrap gap-2">

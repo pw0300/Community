@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import type { Category, Cohort, Community, RecommendationItem, SKU, User } from '../types'
+import type { Category, Cohort, Community, RecommendationItem, SKU, SubCategory, User } from '../types'
 import { formatDate, formatDateTime, getSeatsLabel, sortBySoonest } from '../utils'
 
 interface DiscoverViewProps {
@@ -36,48 +36,66 @@ export function DiscoverView({
     return ['all', ...Array.from(values)]
   }, [cohorts])
 
-  const filteredTiles = useMemo(() => {
+  type CatalogCategory = Category & { subCategories: (SubCategory & { skus: SKU[] })[] }
+
+  const filteredCatalog = useMemo<CatalogCategory[]>(() => {
     const startDate = dateRange.start ? new Date(dateRange.start) : null
     const endDate = dateRange.end ? new Date(dateRange.end) : null
 
-    return categories.map((category) => ({
-      ...category,
-      tiles: category.tiles.filter((tile) => {
-        const sku = skus.find((item) => item.id === tile.skuId)
-        if (!sku) return false
-        const upcoming = sortBySoonest(cohorts.filter((cohort) => cohort.skuId === sku.id)).slice(0, 2)
-        if (!upcoming.length) return false
+    return categories
+      .map((category) => {
+        const subCategories = category.subCategories
+          .map((subCategory) => {
+            const subSkus = subCategory.skuIds
+              .map((skuId) => skus.find((sku) => sku.id === skuId))
+              .filter((sku): sku is SKU => Boolean(sku))
+              .filter((sku) => {
+                const upcoming = sortBySoonest(cohorts.filter((cohort) => cohort.skuId === sku.id))
+                if (!upcoming.length) return false
 
-        const matchesLocation =
-          location === 'all' ||
-          upcoming.some((cohort) => {
-            if (cohort.deliveryMode === 'online' && location === 'Online') return true
-            return cohort.location.toLowerCase().includes(location.toLowerCase())
+                const matchesLocation =
+                  location === 'all' ||
+                  upcoming.some((cohort) => {
+                    if (cohort.deliveryMode === 'online' && location === 'Online') return true
+                    return cohort.location.toLowerCase().includes(location.toLowerCase())
+                  })
+
+                const matchesDelivery =
+                  delivery === 'all' || sku.variants.some((variant) => variant.deliveryMode === delivery)
+
+                const matchesDate = upcoming.some((cohort) => {
+                  if (!startDate && !endDate) return true
+                  const time = cohort.startDate.getTime()
+                  if (startDate && time < startDate.getTime()) return false
+                  if (endDate && time > endDate.getTime()) return false
+                  return true
+                })
+
+                return matchesLocation && matchesDelivery && matchesDate
+              })
+
+            return { ...subCategory, skus: subSkus }
           })
+          .filter((subCategory) => subCategory.skus.length > 0)
 
-        const matchesDelivery = delivery === 'all' || sku.deliveryMode === delivery
-
-        const matchesDate = upcoming.some((cohort) => {
-          if (!startDate && !endDate) return true
-          const time = cohort.startDate.getTime()
-          if (startDate && time < startDate.getTime()) return false
-          if (endDate && time > endDate.getTime()) return false
-          return true
-        })
-
-        return matchesLocation && matchesDelivery && matchesDate
-      }),
-    }))
+        return { ...category, subCategories }
+      })
+      .filter((category) => category.subCategories.length > 0)
   }, [categories, cohorts, dateRange.end, dateRange.start, delivery, location, skus])
 
-  const communityMoments = useMemo(
-    () =>
-      communities
-        .map((community) => community.feed[0])
-        .filter(Boolean)
-        .slice(0, 4),
-    [communities],
-  )
+  const communityActivations = useMemo(() => {
+    return communities
+      .flatMap((community) => community.upcomingEvents.map((event) => ({ community, event })))
+      .sort((a, b) => a.event.startsAt.getTime() - b.event.startsAt.getTime())
+      .slice(0, 4)
+  }, [communities])
+
+  const communitySignals = useMemo(() => {
+    return communities
+      .map((community) => community.feed[0])
+      .filter((post): post is NonNullable<typeof post> => Boolean(post))
+      .slice(0, 4)
+  }, [communities])
 
   return (
     <section className="space-y-12 py-10">
@@ -86,11 +104,11 @@ export function DiscoverView({
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.35em] text-teal-500">Discover</p>
             <h1 className="mt-2 max-w-2xl font-display text-3xl text-slate-900 sm:text-4xl">
-              When you decide to grow, here are two doors you can walk through right now.
+              When you decide to grow, your communities unlock the next move.
             </h1>
             <p className="mt-3 max-w-xl text-sm text-slate-600">
-              GrowthQuest Concierge accelerates action. Pick a lane, compare top cohorts instantly, or ask the concierge to
-              hold your seat.
+              GrowthQuest Concierge is community-first GTM: every option here is already moving inside a circle you can join.
+              Compare top cohorts instantly or let the concierge hold a seat before momentum fades.
             </p>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-600 shadow-sm">
@@ -181,8 +199,56 @@ export function DiscoverView({
         </section>
       )}
 
+      {communityActivations.length > 0 && (
+        <section className="rounded-3xl border border-teal-200 bg-white p-6 shadow-lg shadow-teal-500/10">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <h2 className="font-display text-xl text-slate-900">Community activations happening now</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-teal-500">Community-led GTM</p>
+          </div>
+          <div className="mt-4 grid gap-4 lg:grid-cols-4">
+            {communityActivations.map(({ community, event }) => (
+              <article
+                key={`${community.id}-${event.id}`}
+                className="flex flex-col gap-2 rounded-2xl border border-slate-100 bg-slate-50 p-4 text-xs text-slate-600"
+              >
+                <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-teal-500">
+                  {community.name}
+                </p>
+                <h3 className="text-sm font-semibold text-slate-900">{event.title}</h3>
+                <p>{event.description}</p>
+                <dl className="space-y-1">
+                  <div className="flex justify-between">
+                    <dt>Starts</dt>
+                    <dd>{formatDateTime(event.startsAt)}</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt>Where</dt>
+                    <dd>{event.location}</dd>
+                  </div>
+                  {event.relatedSkuId && (
+                    <div className="flex justify-between">
+                      <dt>Featured SKU</dt>
+                      <dd className="uppercase">{event.relatedSkuId.replace('sku-', '').split('-').join(' ')}</dd>
+                    </div>
+                  )}
+                </dl>
+                <span
+                  className={`mt-2 inline-flex w-fit items-center gap-2 rounded-full px-3 py-1 text-[0.65rem] font-semibold ${
+                    event.status === 'live'
+                      ? 'bg-amber-100 text-amber-700'
+                      : 'bg-teal-50 text-teal-600'
+                  }`}
+                >
+                  {event.status === 'live' ? 'Live now' : 'Up next'} · {event.deliveryMode}
+                </span>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
       <div className="space-y-12">
-        {filteredTiles.map((category) => (
+        {filteredCatalog.map((category) => (
           <section key={category.id} className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
@@ -190,58 +256,87 @@ export function DiscoverView({
                 <h2 className="mt-2 font-display text-2xl text-slate-900">{category.description}</h2>
               </div>
             </div>
-            <div className="grid gap-6 lg:grid-cols-2">
-              {category.tiles.map((tile) => {
-                const sku = skus.find((item) => item.id === tile.skuId)
-                if (!sku) return null
-                const upcoming = sortBySoonest(cohorts.filter((cohort) => cohort.skuId === sku.id)).slice(0, 2)
+            <div className="space-y-6">
+              {category.subCategories.map((subCategory: SubCategory & { skus: SKU[] }) => {
+                const defaultCommunity = communities.find((community) => community.id === subCategory.defaultCommunityId)
                 return (
                   <article
-                    key={tile.id}
-                    className="flex flex-col justify-between rounded-3xl border border-slate-100 bg-white shadow-lg shadow-slate-200/60 transition hover:-translate-y-1 hover:border-teal-200 hover:shadow-teal-200/70"
+                    key={subCategory.id}
+                    className="space-y-4 rounded-3xl border border-slate-100 bg-white p-6 shadow-lg shadow-slate-200/60"
                   >
-                    <div className="overflow-hidden rounded-t-3xl">
-                      <div
-                        className="h-48 w-full bg-cover bg-center"
-                        style={{ backgroundImage: `linear-gradient(180deg, rgba(15,23,42,0.3), rgba(15,23,42,0.7)), url(${tile.coverImage})` }}
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center">
+                      <img
+                        src={subCategory.heroImage}
+                        alt=""
+                        className="h-32 w-full rounded-2xl object-cover md:h-40 md:w-56"
                       />
-                    </div>
-                    <div className="space-y-4 p-6">
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-teal-500">{sku.theme}</p>
-                          <h3 className="mt-1 text-2xl font-semibold text-slate-900">{tile.name}</h3>
-                          <p className="mt-2 text-sm text-slate-600">{sku.tagline}</p>
+                      <div className="space-y-2">
+                        <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                          <span className="rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-600">
+                            {subCategory.label}
+                          </span>
+                          {defaultCommunity && (
+                            <span className="rounded-full bg-teal-50 px-3 py-1 font-semibold text-teal-600">
+                              Community engine: {defaultCommunity.name}
+                            </span>
+                          )}
                         </div>
-                        <span className="rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-600">
-                          {sku.format === 'group' ? 'Group Session' : '1-to-1'}
-                        </span>
+                        <h3 className="font-display text-2xl text-slate-900">{subCategory.description}</h3>
+                        <p className="text-sm text-slate-600">{subCategory.narrative}</p>
                       </div>
+                    </div>
 
-                      <div className="grid gap-2 text-xs text-slate-500">
-                        {upcoming.map((cohort) => (
+                    <div className="grid gap-4 lg:grid-cols-2">
+                      {subCategory.skus.slice(0, 2).map((sku: SKU) => {
+                        const upcoming = sortBySoonest(cohorts.filter((cohort) => cohort.skuId === sku.id)).slice(0, 2)
+                        if (!upcoming.length) return null
+                        const primaryVariant = sku.variants[0]
+                        return (
                           <div
-                            key={cohort.id}
-                            className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-3 py-2"
+                            key={sku.id}
+                            className="flex h-full flex-col gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-4 text-sm text-slate-600"
                           >
-                            <div>
-                              <p className="font-semibold text-slate-700">{formatDate(cohort.startDate)}</p>
-                              <p>{getSeatsLabel(cohort)}</p>
+                            <div className="flex flex-col gap-1">
+                              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-teal-500">
+                                {sku.theme}
+                              </p>
+                              <h4 className="text-lg font-semibold text-slate-900">{sku.tagline}</h4>
                             </div>
-                            <div className="text-right">
-                              <p className="font-semibold text-slate-700">{cohort.deliveryMode.toUpperCase()}</p>
-                              <p>{cohort.format === 'group' ? 'Group' : '1-to-1'} · {sku.sessionType === 'single' ? 'Single' : 'Multi'} session</p>
+                            <p className="text-xs text-slate-500">{primaryVariant?.description ?? sku.description}</p>
+                            <div className="flex flex-wrap items-center gap-2 text-[0.7rem] font-semibold text-slate-500">
+                              <span className="rounded-full bg-teal-50 px-3 py-1 text-teal-600">
+                                {primaryVariant?.deliveryMode.toUpperCase()} · {primaryVariant?.format}
+                              </span>
+                              <span className="rounded-full bg-slate-100 px-3 py-1">
+                                {primaryVariant?.sessionType === 'single' ? 'Single session' : 'Multi-session'}
+                              </span>
+                              <span className="rounded-full bg-slate-100 px-3 py-1">{sku.intensity}</span>
                             </div>
+                            <ul className="space-y-1 text-xs text-slate-500">
+                              {primaryVariant?.highlights.slice(0, 2).map((highlight: string) => (
+                                <li key={highlight} className="flex items-center gap-2">
+                                  <span className="h-2 w-2 rounded-full bg-teal-500" /> {highlight}
+                                </li>
+                              ))}
+                            </ul>
+                            <dl className="space-y-2 text-xs">
+                              {upcoming.map((cohort) => (
+                                <div key={cohort.id} className="flex items-center justify-between rounded-2xl bg-white px-4 py-3">
+                                  <dt className="font-semibold text-slate-900">{formatDate(cohort.startDate)}</dt>
+                                  <dd className="text-slate-500">{getSeatsLabel(cohort)}</dd>
+                                </div>
+                              ))}
+                            </dl>
+                            <button
+                              onClick={() => onSelectSku(sku.id)}
+                              className="mt-auto inline-flex items-center gap-2 rounded-full bg-teal-500 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-teal-500/40 transition hover:bg-teal-600"
+                            >
+                              Compare top cohorts
+                              <span aria-hidden>→</span>
+                            </button>
                           </div>
-                        ))}
-                      </div>
-
-                      <button
-                        onClick={() => onSelectSku(sku.id)}
-                        className="w-full rounded-full bg-teal-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-teal-500/40 transition hover:bg-teal-600"
-                      >
-                        View top options
-                      </button>
+                        )
+                      })}
                     </div>
                   </article>
                 )
@@ -257,7 +352,7 @@ export function DiscoverView({
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Cross-discovery in motion</p>
         </div>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
-          {communityMoments.map((post) => (
+          {communitySignals.map((post) => (
             <article
               key={post.id}
               className="rounded-2xl border border-slate-100 bg-gradient-to-br from-white to-slate-50 p-4 shadow-sm"

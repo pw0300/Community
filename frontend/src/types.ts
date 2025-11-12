@@ -30,6 +30,29 @@ export interface AddOn {
   price: number
 }
 
+export interface SkuVariant {
+  id: string
+  skuId: string
+  name: string
+  description: string
+  heroImage: string
+  deliveryMode: DeliveryMode
+  format: SessionFormat
+  sessionType: SessionType
+  highlights: string[]
+  upcomingCohortIds: string[]
+}
+
+export interface SubCategory {
+  id: string
+  label: string
+  description: string
+  narrative: string
+  heroImage: string
+  skuIds: string[]
+  defaultCommunityId?: string
+}
+
 export interface Cohort {
   id: string
   skuId: string
@@ -64,6 +87,7 @@ export interface CommunityQA {
 export interface SKU {
   id: string
   categoryId: string
+  subCategoryId: string
   theme: string
   tagline: string
   description: string
@@ -78,14 +102,7 @@ export interface SKU {
   communityHighlights: CommunityHighlight[]
   qa: CommunityQA[]
   bundleTargets: string[]
-}
-
-export interface ThemeTile {
-  id: string
-  skuId: string
-  name: string
-  coverImage: string
-  narrative: string
+  variants: SkuVariant[]
 }
 
 export interface Category {
@@ -93,7 +110,7 @@ export interface Category {
   label: string
   description: string
   themeColor: string
-  tiles: ThemeTile[]
+  subCategories: SubCategory[]
 }
 
 export interface CommunityPost {
@@ -121,11 +138,27 @@ export interface Community {
   feed: CommunityPost[]
   relatedSkuIds: string[]
   memberIds: string[]
+  upcomingEvents: CommunityEvent[]
   aiAgentConfig: {
     cadenceMinutes: number
     tone: 'warm' | 'energizing' | 'celebratory'
     defaultPrompts: string[]
   }
+}
+
+export interface CommunityEvent {
+  id: string
+  title: string
+  description: string
+  startsAt: Date
+  timeZone: string
+  location: string
+  host: string
+  relatedSkuId?: string
+  image: string
+  status: 'upcoming' | 'live'
+  format: SessionFormat
+  deliveryMode: DeliveryMode
 }
 
 export interface ActivityRecord {

@@ -70,6 +70,7 @@ export const geminiService = {
       .slice(0, 3)
       .map((sku) => {
         const nextCohort = sortBySoonest(dataIndex.cohorts.filter((c) => c.skuId === sku.id))[0]
+        const primaryVariant = sku.variants[0]
         return {
           skuId: sku.id,
           title: sku.theme,
@@ -140,13 +141,14 @@ export const geminiService = {
       .slice(0, 2)
       .map((sku) => {
         const cohort = sortBySoonest(dataIndex.cohorts.filter((c) => c.skuId === sku.id))[0]
+        const primaryVariant = sku.variants[0]
         return {
           skuId: sku.id,
           title: sku.theme,
           tagline: sku.tagline,
           reason: `Pairs well with your ${recentThemes[0]} momentum`,
           nextStart: cohort?.startDate ?? new Date(),
-          deliveryMode: cohort?.deliveryMode ?? sku.deliveryMode,
+          deliveryMode: cohort?.deliveryMode ?? primaryVariant?.deliveryMode ?? sku.deliveryMode,
         }
       })
 

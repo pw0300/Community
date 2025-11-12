@@ -13,6 +13,8 @@ interface DecisionViewProps {
 
 export function DecisionView({ sku, cohorts, providers, onSelectCohort, onCompare, comparing, onCloseCompare }: DecisionViewProps) {
   const topCohorts = cohorts.slice(0, 2)
+  const primaryVariant = sku.variants[0]
+  const comparisonVariants = sku.variants.slice(0, 2)
 
   return (
     <section className="space-y-10 py-10">
@@ -21,9 +23,15 @@ export function DecisionView({ sku, cohorts, providers, onSelectCohort, onCompar
         <h1 className="mt-3 font-display text-3xl text-slate-900">{sku.theme}: {sku.tagline}</h1>
         <p className="mt-3 max-w-3xl text-sm text-slate-600">{sku.description}</p>
         <div className="mt-6 flex flex-wrap items-center gap-3">
-          <span className="rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-600">{sku.deliveryMode.toUpperCase()}</span>
-          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{sku.format === 'group' ? 'Group session' : '1-to-1'}</span>
-          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{sku.sessionType === 'single' ? 'Single session' : 'Multi-session'}</span>
+          <span className="rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-600">
+            {(primaryVariant?.deliveryMode ?? sku.deliveryMode).toUpperCase()}
+          </span>
+          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+            {primaryVariant?.format ?? sku.format}
+          </span>
+          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+            {(primaryVariant?.sessionType ?? sku.sessionType) === 'single' ? 'Single session' : 'Multi-session'}
+          </span>
           <button
             onClick={onCompare}
             className="ml-auto rounded-full border border-teal-200 px-4 py-2 text-xs font-semibold text-teal-600 shadow-sm hover:border-teal-400 hover:text-teal-700"
@@ -31,6 +39,29 @@ export function DecisionView({ sku, cohorts, providers, onSelectCohort, onCompar
             Compare options
           </button>
         </div>
+        {comparisonVariants.length > 0 && (
+          <div className="mt-6 grid gap-3 md:grid-cols-2">
+            {comparisonVariants.map((variant) => (
+              <div key={variant.id} className="rounded-2xl border border-slate-100 bg-slate-50 p-4 text-xs text-slate-600">
+                <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-teal-500">Variant</p>
+                <h3 className="mt-1 text-base font-semibold text-slate-900">{variant.name}</h3>
+                <p className="mt-2 text-slate-600">{variant.description}</p>
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-[0.65rem] font-semibold text-slate-500">
+                  <span className="rounded-full bg-white px-3 py-1 text-teal-600">{variant.deliveryMode.toUpperCase()}</span>
+                  <span className="rounded-full bg-white px-3 py-1">{variant.format}</span>
+                  <span className="rounded-full bg-white px-3 py-1">{variant.sessionType === 'single' ? 'Single' : 'Multi'} session</span>
+                </div>
+                <ul className="mt-3 space-y-1 text-[0.65rem] text-slate-500">
+                  {variant.highlights.slice(0, 3).map((highlight) => (
+                    <li key={highlight} className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-teal-500" /> {highlight}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
       </header>
 
       <div className="grid gap-6 lg:grid-cols-2">
