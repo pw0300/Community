@@ -406,6 +406,7 @@ function App() {
         {state.mode === 'seeker' && state.view === 'activities' && state.user && (
           <ActivitiesHub
             user={state.user}
+            skus={state.skus}
             onEnterCohort={(cohortId) => {
               dispatch({ type: 'SELECT_COHORT', payload: cohortId })
               dispatch({ type: 'SET_VIEW', payload: 'cohort' })

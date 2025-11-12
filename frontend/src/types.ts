@@ -11,55 +11,6 @@ export type AppView =
 export type AppMode = 'seeker' | 'provider'
 export type ProviderView = 'guide' | 'partner'
 
-export type OctalysisDrive =
-  | 'epicMeaning'
-  | 'accomplishment'
-  | 'empowerment'
-  | 'ownership'
-  | 'socialInfluence'
-  | 'scarcity'
-  | 'unpredictability'
-  | 'avoidance'
-
-export interface GamificationBadge {
-  id: string
-  title: string
-  description: string
-  drive: OctalysisDrive
-  earnedAt: Date
-}
-
-export interface GamifiedQuest {
-  id: string
-  title: string
-  description: string
-  drive: OctalysisDrive
-  progress: number
-  target: number
-  reward: string
-  status: 'active' | 'completed'
-  expiresAt: Date
-}
-
-export interface UserGamificationState {
-  level: number
-  xp: number
-  nextLevelXp: number
-  streakDays: number
-  energy: number
-  focusDrive: OctalysisDrive
-  badges: GamificationBadge[]
-  questLog: GamifiedQuest[]
-}
-
-export interface CommunityGamificationState {
-  synergyScore: number
-  questOfWeek: GamifiedQuest
-  leaderBoard: { memberName: string; score: number; drive: OctalysisDrive }[]
-  driveSpotlights: { drive: OctalysisDrive; narrative: string }[]
-  scarcityCountdown?: { label: string; endsAt: Date }
-}
-
 export interface Provider {
   id: string
   name: string
@@ -193,7 +144,6 @@ export interface Community {
     tone: 'warm' | 'energizing' | 'celebratory'
     defaultPrompts: string[]
   }
-  gamification: CommunityGamificationState
 }
 
 export interface CommunityEvent {
@@ -235,7 +185,6 @@ export interface User {
   upcomingActivities: ActivityRecord[]
   waitlistedActivities: ActivityRecord[]
   pastActivities: ActivityRecord[]
-  gamification: UserGamificationState
 }
 
 export interface ConciergeAction {

@@ -12,17 +12,6 @@ import { formatDateTime, sortBySoonest } from './utils'
 
 const avatarAi = 'https://cdn-icons-png.flaticon.com/512/6134/6134346.png'
 
-const octalysisLabels = {
-  epicMeaning: { label: 'Epic Meaning & Calling', emoji: '🌍' },
-  accomplishment: { label: 'Development & Accomplishment', emoji: '🏔️' },
-  empowerment: { label: 'Empowerment of Creativity & Feedback', emoji: '🛠️' },
-  ownership: { label: 'Ownership & Possession', emoji: '📊' },
-  socialInfluence: { label: 'Social Influence & Relatedness', emoji: '🤝' },
-  scarcity: { label: 'Scarcity & Impatience', emoji: '⏳' },
-  unpredictability: { label: 'Unpredictability & Curiosity', emoji: '🎲' },
-  avoidance: { label: 'Loss & Avoidance', emoji: '🚨' },
-} as const
-
 const normalise = (text: string) => text.toLowerCase().trim()
 
 const detectSkuFromMessage = (message: string): SKU | undefined => {
@@ -118,33 +107,10 @@ export const geminiService = {
   },
 
   async getCommunityEngagementPost(community: Community): Promise<CommunityPost> {
-    const quest = community.gamification.questOfWeek
-    const driveMeta = octalysisLabels[quest.drive]
-    const progressPct = Math.min(100, Math.round((quest.progress / quest.target) * 100))
-
-    const prompts = [...community.aiAgentConfig.defaultPrompts]
-
-    prompts.push(
-      `${driveMeta.emoji} ${driveMeta.label} quest pulse: ${quest.title} is ${progressPct}% complete. ${quest.description} · Reward: ${quest.reward}.`,
-    )
-
-    const spotlight = community.gamification.driveSpotlights[0]
-    if (spotlight) {
-      const spotlightMeta = octalysisLabels[spotlight.drive]
-      prompts.push(`${spotlightMeta.emoji} Spotlight: ${spotlightMeta.label} — ${spotlight.narrative}`)
-    }
-
-    if (community.gamification.scarcityCountdown) {
-      prompts.push(
-        `${octalysisLabels.scarcity.emoji} Scarcity signal: ${community.gamification.scarcityCountdown.label}. Closes ${formatDateTime(
-          community.gamification.scarcityCountdown.endsAt,
-        )}.`,
-      )
-    }
-
-    const prompt = prompts[Math.floor(Math.random() * prompts.length)]
-
-    const shouldPoll = quest.drive === 'socialInfluence' || quest.drive === 'empowerment'
+    const prompt =
+      community.aiAgentConfig.defaultPrompts[
+        Math.floor(Math.random() * community.aiAgentConfig.defaultPrompts.length)
+      ]
 
     return {
       id: `ai-${community.id}-${Date.now()}`,
@@ -153,13 +119,13 @@ export const geminiService = {
       avatar: avatarAi,
       createdAt: new Date(),
       content: prompt,
-      poll: shouldPoll
+      poll: /poll/i.test(prompt)
         ? {
-            prompt: `${driveMeta.emoji} Rally check-in: how are you contributing to ${quest.title}?`,
+            prompt: 'Cast your vote',
             options: [
-              { id: 'option-a', label: 'Shipping my contribution', votes: Math.floor(Math.random() * 18) + 5 },
-              { id: 'option-b', label: 'Need a collaborator', votes: Math.floor(Math.random() * 12) + 3 },
-              { id: 'option-c', label: 'Share a resource', votes: Math.floor(Math.random() * 9) + 2 },
+              { id: 'option-a', label: 'I’m in', votes: Math.floor(Math.random() * 18) + 5 },
+              { id: 'option-b', label: 'Need support', votes: Math.floor(Math.random() * 12) + 3 },
+              { id: 'option-c', label: 'Share tips', votes: Math.floor(Math.random() * 9) + 2 },
             ],
           }
         : undefined,
