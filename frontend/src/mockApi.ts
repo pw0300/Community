@@ -1117,6 +1117,39 @@ const communities: Community[] = [
         'Weather check: where in the world are you trekking from? Let’s map the climates.',
       ],
     },
+    gamification: {
+      synergyScore: 86,
+      questOfWeek: {
+        id: 'quest-trek-epic',
+        title: 'Summit Stories Relay',
+        description: 'Post a dawn capture or micro-win to welcome the next trek pod.',
+        drive: 'epicMeaning',
+        progress: 24,
+        target: 40,
+        reward: 'Unlock the altitude acclimation blueprint drop',
+        status: 'active',
+        expiresAt: createDate('2025-12-01T23:59:00Z'),
+      },
+      leaderBoard: [
+        { memberName: 'Ava Laurent', score: 340, drive: 'socialInfluence' },
+        { memberName: 'Luis Mendez', score: 310, drive: 'accomplishment' },
+        { memberName: 'Maya Chen', score: 295, drive: 'epicMeaning' },
+      ],
+      driveSpotlights: [
+        {
+          drive: 'epicMeaning',
+          narrative: 'Rescue drill volunteers just onboarded 12 first-timers for the trek warm-up.',
+        },
+        {
+          drive: 'scarcity',
+          narrative: 'Only six slots left for the cave expedition recon hike—claim your pod.',
+        },
+      ],
+      scarcityCountdown: {
+        label: 'Cave expedition charter locks in',
+        endsAt: createDate('2025-12-03T09:00:00Z'),
+      },
+    },
   },
   {
     id: 'community-rafters',
@@ -1174,6 +1207,33 @@ const communities: Community[] = [
         'What river stretch are you eyeing next? Drop the grade + date so we can form pods.',
         'Telemetry tip swap: share your favourite paddle drill before the weekend.',
       ],
+    },
+    gamification: {
+      synergyScore: 79,
+      questOfWeek: {
+        id: 'quest-raft-empower',
+        title: 'Design the Surge Playbook',
+        description: 'Upload a paddle drill or telemetry insight to power the collective river run.',
+        drive: 'empowerment',
+        progress: 9,
+        target: 15,
+        reward: 'River surge pod unlocks beta line intel',
+        status: 'active',
+        expiresAt: createDate('2025-12-05T12:00:00Z'),
+      },
+      leaderBoard: [
+        { memberName: 'Rivera Rapids Collective', score: 410, drive: 'ownership' },
+        { memberName: 'Ava Laurent', score: 288, drive: 'empowerment' },
+        { memberName: 'Sasha Kim', score: 240, drive: 'socialInfluence' },
+      ],
+      driveSpotlights: [
+        { drive: 'empowerment', narrative: 'Telemetry remix challenge produced 4 new cadence drills.' },
+        { drive: 'unpredictability', narrative: 'Mystery river guest joins Friday’s clinic—stay tuned.' },
+      ],
+      scarcityCountdown: {
+        label: 'Safety clinic roster closes',
+        endsAt: createDate('2025-12-07T23:00:00Z'),
+      },
     },
   },
   {
@@ -1243,6 +1303,29 @@ const communities: Community[] = [
         'Who wants a shout-out in tomorrow’s habit ladder spotlight? Reply with your win.',
       ],
     },
+    gamification: {
+      synergyScore: 91,
+      questOfWeek: {
+        id: 'quest-gut-ownership',
+        title: 'Culture Keeper Relay',
+        description: 'Log your fermentation batch and share one biomarker shift this week.',
+        drive: 'ownership',
+        progress: 58,
+        target: 75,
+        reward: 'Unlock functional lab Q&A seat',
+        status: 'active',
+        expiresAt: createDate('2025-11-30T21:00:00Z'),
+      },
+      leaderBoard: [
+        { memberName: 'Nalini Rao', score: 520, drive: 'epicMeaning' },
+        { memberName: 'Ava Laurent', score: 480, drive: 'ownership' },
+        { memberName: 'Gut Reset Circle AI', score: 430, drive: 'empowerment' },
+      ],
+      driveSpotlights: [
+        { drive: 'ownership', narrative: 'Members logged 112 biomarker updates in the shared tracker.' },
+        { drive: 'accomplishment', narrative: 'Habit ladder streak unlocked the alumni breathwork bonus.' },
+      ],
+    },
   },
   {
     id: 'community-lakeside',
@@ -1303,6 +1386,29 @@ const communities: Community[] = [
         'Who wants to host the next alumni spotlight under the stars? Call dibs below.',
       ],
     },
+    gamification: {
+      synergyScore: 74,
+      questOfWeek: {
+        id: 'quest-lakeside-social',
+        title: 'Canopy Co-creators',
+        description: 'Team up with an alumni host and storyboard a new lakeside ritual moment.',
+        drive: 'socialInfluence',
+        progress: 6,
+        target: 12,
+        reward: 'Feature in the canopy showcase reel',
+        status: 'active',
+        expiresAt: createDate('2025-12-09T18:00:00Z'),
+      },
+      leaderBoard: [
+        { memberName: 'Nalini Rao', score: 360, drive: 'epicMeaning' },
+        { memberName: 'Ava Laurent', score: 305, drive: 'socialInfluence' },
+        { memberName: 'Jonah Lee', score: 250, drive: 'empowerment' },
+      ],
+      driveSpotlights: [
+        { drive: 'socialInfluence', narrative: 'Three alumni teamed up to co-design the canopy welcome toast.' },
+        { drive: 'unpredictability', narrative: 'Secret sunset musician to be revealed after 5 more storyboard drops.' },
+      ],
+    },
   },
   {
     id: 'community-wealth-builders',
@@ -1348,6 +1454,29 @@ const communities: Community[] = [
         'Voting time—who wants a teardown of their ops dashboard on Thursday? Reply with a 📊.',
       ],
     },
+    gamification: {
+      synergyScore: 68,
+      questOfWeek: {
+        id: 'quest-wealth-accomplishment',
+        title: 'Operator KPI Sprint',
+        description: 'Upload your new operating KPI dashboard and crowdsource one optimization.',
+        drive: 'accomplishment',
+        progress: 11,
+        target: 18,
+        reward: 'Private office hours with the guild CFO',
+        status: 'active',
+        expiresAt: createDate('2025-12-06T17:00:00Z'),
+      },
+      leaderBoard: [
+        { memberName: 'Noah Williams', score: 330, drive: 'ownership' },
+        { memberName: 'Ava Laurent', score: 270, drive: 'accomplishment' },
+        { memberName: 'Riya Tan', score: 215, drive: 'scarcity' },
+      ],
+      driveSpotlights: [
+        { drive: 'accomplishment', narrative: 'Five members hit their cash runway target ahead of the quarter.' },
+        { drive: 'scarcity', narrative: 'Only two teardown slots remain for next week’s analytics lab.' },
+      ],
+    },
   },
   {
     id: 'community-communicators',
@@ -1391,6 +1520,29 @@ const communities: Community[] = [
       defaultPrompts: [
         'Show us your before/after slide glow-ups! We’ll highlight a hero deck Friday.',
         'Quick-fire poll: Which stakeholder conversation needs the most support this week?',
+      ],
+    },
+    gamification: {
+      synergyScore: 72,
+      questOfWeek: {
+        id: 'quest-comm-empower',
+        title: 'Narrative Remix Challenge',
+        description: 'Pair up to rewrite a two-minute pitch and share the before/after clip.',
+        drive: 'empowerment',
+        progress: 5,
+        target: 10,
+        reward: 'AI narrative twin unlock for a month',
+        status: 'active',
+        expiresAt: createDate('2025-12-04T23:59:00Z'),
+      },
+      leaderBoard: [
+        { memberName: 'Lena Ortiz', score: 310, drive: 'socialInfluence' },
+        { memberName: 'Ava Laurent', score: 265, drive: 'empowerment' },
+        { memberName: 'Elena T.', score: 240, drive: 'accomplishment' },
+      ],
+      driveSpotlights: [
+        { drive: 'empowerment', narrative: 'Studio alumni co-built 7 new storytelling frames this week.' },
+        { drive: 'unpredictability', narrative: 'Mystery VC guest will rate top remix if we hit the quest target.' },
       ],
     },
   },
@@ -1450,6 +1602,29 @@ const communities: Community[] = [
       defaultPrompts: [
         'Spotlight time: who deserves the confetti canon this week? Tag them below!',
         'Drop your moodboard-in-progress—we’ll remix it live on Thursday.',
+      ],
+    },
+    gamification: {
+      synergyScore: 77,
+      questOfWeek: {
+        id: 'quest-celebrate-meaning',
+        title: 'Legendary Moments Hunt',
+        description: 'Share a behind-the-scenes moment that made a celebration unforgettable.',
+        drive: 'epicMeaning',
+        progress: 13,
+        target: 20,
+        reward: 'Feature in the Celebration Architects spotlight & vendor perks',
+        status: 'active',
+        expiresAt: createDate('2025-12-12T20:00:00Z'),
+      },
+      leaderBoard: [
+        { memberName: 'Ami & Co.', score: 295, drive: 'epicMeaning' },
+        { memberName: 'Ava Laurent', score: 255, drive: 'socialInfluence' },
+        { memberName: 'Marcelo R.', score: 230, drive: 'empowerment' },
+      ],
+      driveSpotlights: [
+        { drive: 'epicMeaning', narrative: 'Community-led proposal sparked three new referrals this week.' },
+        { drive: 'scarcity', narrative: 'Limited artist slots for Lakeside canopy available until Friday.' },
       ],
     },
   },
@@ -1514,6 +1689,54 @@ const user: User = {
       ],
     },
   ],
+  gamification: {
+    level: 7,
+    xp: 2150,
+    nextLevelXp: 2600,
+    streakDays: 5,
+    energy: 68,
+    focusDrive: 'epicMeaning',
+    badges: [
+      {
+        id: 'badge-community-catalyst',
+        title: 'Community Catalyst',
+        description: 'Sparked three intros that converted to bookings.',
+        drive: 'socialInfluence',
+        earnedAt: createDate('2025-11-08T08:00:00Z'),
+      },
+      {
+        id: 'badge-habit-guardian',
+        title: 'Habit Guardian',
+        description: 'Kept a five-day biomarker logging streak.',
+        drive: 'ownership',
+        earnedAt: createDate('2025-11-02T18:00:00Z'),
+      },
+    ],
+    questLog: [
+      {
+        id: 'quest-live-now',
+        title: 'Amplify the Trek Rally',
+        description: 'Share two actionable insights in the Weekend Trekkers feed.',
+        drive: 'socialInfluence',
+        progress: 1,
+        target: 2,
+        reward: 'Unlock early drop on ridge intel pack',
+        status: 'active',
+        expiresAt: createDate('2025-11-29T23:59:00Z'),
+      },
+      {
+        id: 'quest-gut-finish',
+        title: 'Gut Reset Steward',
+        description: 'Log biomarker updates five days in a row.',
+        drive: 'ownership',
+        progress: 5,
+        target: 5,
+        reward: 'Badge: Culture Keeper',
+        status: 'completed',
+        expiresAt: createDate('2025-11-20T20:00:00Z'),
+      },
+    ],
+  },
 }
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))

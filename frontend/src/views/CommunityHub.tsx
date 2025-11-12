@@ -10,12 +10,27 @@ interface CommunityHubProps {
   onAiPulse: (communityId: string) => Promise<void>
 }
 
+const driveCopy = {
+  epicMeaning: { label: 'Epic Meaning & Calling', emoji: '🌍', accent: 'from-teal-500 via-emerald-400 to-amber-300' },
+  accomplishment: { label: 'Development & Accomplishment', emoji: '🏔️', accent: 'from-amber-500 via-amber-300 to-yellow-200' },
+  empowerment: { label: 'Empowerment of Creativity & Feedback', emoji: '🛠️', accent: 'from-sky-500 via-teal-300 to-emerald-200' },
+  ownership: { label: 'Ownership & Possession', emoji: '📊', accent: 'from-indigo-500 via-blue-400 to-sky-200' },
+  socialInfluence: { label: 'Social Influence & Relatedness', emoji: '🤝', accent: 'from-pink-500 via-rose-300 to-amber-200' },
+  scarcity: { label: 'Scarcity & Impatience', emoji: '⏳', accent: 'from-orange-500 via-amber-400 to-yellow-200' },
+  unpredictability: { label: 'Unpredictability & Curiosity', emoji: '🎲', accent: 'from-purple-500 via-fuchsia-400 to-pink-200' },
+  avoidance: { label: 'Loss & Avoidance', emoji: '🚨', accent: 'from-red-500 via-orange-400 to-amber-200' },
+} as const
+
 export function CommunityHub({ communities, activeCommunityId, onSelectCommunity, onCreatePost, onAiPulse }: CommunityHubProps) {
   const [activeTab, setActiveTab] = useState<'feed' | 'related' | 'members'>('feed')
   const activeCommunity = useMemo(() => {
     if (!communities.length) return undefined
     return communities.find((community) => community.id === activeCommunityId) ?? communities[0]
   }, [activeCommunityId, communities])
+
+  const quest = activeCommunity?.gamification.questOfWeek
+  const questDrive = quest ? driveCopy[quest.drive] : undefined
+  const questProgress = quest && quest.target > 0 ? Math.min(100, Math.round((quest.progress / quest.target) * 100)) : 0
 
   useEffect(() => {
     if (!activeCommunity) return
@@ -94,6 +109,104 @@ export function CommunityHub({ communities, activeCommunityId, onSelectCommunity
             </button>
           </div>
         </header>
+
+        {quest && questDrive && (
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr),minmax(0,1fr)]">
+            <article className="relative overflow-hidden rounded-3xl border border-teal-100 bg-white p-6 shadow-lg shadow-teal-500/10">
+              <div className={`pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br opacity-40 ${questDrive.accent}`} />
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-teal-600">Community quest</p>
+              <h2 className="mt-2 font-display text-2xl text-slate-900">
+                {questDrive.emoji} {quest.title}
+              </h2>
+              <p className="mt-2 text-sm text-slate-600">{quest.description}</p>
+              <p className="mt-3 text-xs font-semibold text-slate-500">
+                {questDrive.label} · Reward: {quest.reward}
+              </p>
+              <div className="mt-4 h-2 w-full rounded-full bg-slate-200/70">
+                <div
+                  className="h-2 rounded-full bg-teal-500 shadow-lg shadow-teal-500/40"
+                  style={{ width: `${questProgress}%` }}
+                />
+              </div>
+              <p className="mt-2 text-xs text-slate-500">
+                Progress {quest.progress} / {quest.target} contributions · {questProgress}%
+              </p>
+              <div className="mt-4 grid gap-2 text-xs text-slate-600 md:grid-cols-2">
+                {activeCommunity.gamification.driveSpotlights.slice(0, 2).map((spotlight) => {
+                  const spotlightMeta = driveCopy[spotlight.drive]
+                  return (
+                    <div key={spotlight.drive} className="rounded-2xl border border-white/50 bg-white/60 p-3 shadow-sm">
+                      <p className="font-semibold text-slate-900">
+                        {spotlightMeta.emoji} {spotlightMeta.label}
+                      </p>
+                      <p className="mt-1 text-slate-600">{spotlight.narrative}</p>
+                    </div>
+                  )
+                })}
+              </div>
+            </article>
+
+            <aside className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/50">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Synergy score</p>
+                <div className="mt-2 flex items-baseline gap-3">
+                  <span className="text-4xl font-bold text-teal-600">{activeCommunity.gamification.synergyScore}</span>
+                  <span className="text-xs uppercase text-slate-400">out of 100</span>
+                </div>
+                <p className="mt-1 text-xs text-slate-500">Anchored in {questDrive.label.toLowerCase()} momentum.</p>
+              </div>
+              {activeCommunity.gamification.scarcityCountdown && (
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-700">
+                  <p className="font-semibold uppercase tracking-[0.2em] text-amber-600">Scarcity signal</p>
+                  <p className="mt-1 text-amber-700">{activeCommunity.gamification.scarcityCountdown.label}</p>
+                  <p className="mt-2 text-[0.7rem] text-amber-600">Closes {formatDateTime(activeCommunity.gamification.scarcityCountdown.endsAt)}</p>
+                </div>
+              )}
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Drive focus</p>
+                <p className="mt-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
+                  <span aria-hidden>{questDrive.emoji}</span> {questDrive.label}
+                </p>
+                <p className="mt-1 text-xs text-slate-500">
+                  Octalysis framing keeps this community as the GTM launchpad for new cohorts.
+                </p>
+              </div>
+            </aside>
+          </div>
+        )}
+
+        {quest && activeCommunity.gamification.leaderBoard.length > 0 && (
+          <div className="rounded-3xl border border-teal-100 bg-white p-6 shadow-lg shadow-teal-500/10">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <h3 className="font-display text-xl text-slate-900">Guild leaderboard</h3>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-teal-500">Gamified momentum</p>
+            </div>
+            <ul className="mt-4 space-y-3">
+              {activeCommunity.gamification.leaderBoard.map((entry, index) => {
+                const meta = driveCopy[entry.drive]
+                return (
+                  <li
+                    key={`${entry.memberName}-${entry.drive}`}
+                    className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-600"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-500/10 text-sm font-semibold text-teal-600">
+                        #{index + 1}
+                      </span>
+                      <div>
+                        <p className="font-semibold text-slate-900">{entry.memberName}</p>
+                        <p className="text-xs text-slate-500">
+                          {meta.emoji} {meta.label}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-sm font-semibold text-teal-600">{entry.score}</span>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        )}
 
         {activeCommunity.upcomingEvents.length > 0 && (
           <div className="rounded-3xl border border-amber-100 bg-white p-6 shadow-lg shadow-amber-200/40">
