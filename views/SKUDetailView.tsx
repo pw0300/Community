@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import type { SKU, Cohort, Provider, CommunityPost, User, Category, CategoryTheme } from '../types';
 import { mockApi } from '../services/mockApi';
-import { formatDateTime } from '../utils';
+import { formatDateTime, formatTimeAgo } from '../utils';
 import * as Icons from '../components/icons';
 
 interface SKUDetailViewProps {
@@ -90,7 +90,7 @@ const SKUDetailView: React.FC<SKUDetailViewProps> = ({ sku, navigateTo }) => {
     const [detailedSku, setDetailedSku] = useState<SKU | null>(null);
     const [category, setCategory] = useState<Category | null>(null);
     const [providers, setProviders] = useState<Map<string, Provider>>(new Map());
-    const [communityPosts, setCommunityPosts] = useState<CommunityPost[]>([]);
+    const [proofOfGrowthPosts, setProofOfGrowthPosts] = useState<CommunityPost[]>([]);
     const [postAuthors, setPostAuthors] = useState<Map<string, User>>(new Map());
     const [isLoading, setIsLoading] = useState(true);
 
@@ -119,8 +119,8 @@ const SKUDetailView: React.FC<SKUDetailViewProps> = ({ sku, navigateTo }) => {
 
             if (skuData.communityId) {
                 const community = await mockApi.getCommunityById(skuData.communityId);
-                const posts = community?.posts.slice(0, 2) || [];
-                setCommunityPosts(posts);
+                const posts = community?.posts.filter(p => p.postType === 'proof-of-growth' && p.relatedSkuId === skuData.id) || [];
+                setProofOfGrowthPosts(posts);
 
                 const authorIds = new Set(posts.map(p => p.authorId));
                 const authorData = await Promise.all(Array.from(authorIds).map(id => mockApi.getUserById(id)));
@@ -143,6 +143,11 @@ const SKUDetailView: React.FC<SKUDetailViewProps> = ({ sku, navigateTo }) => {
     }, [detailedSku]);
 
     const theme = category ? themeStyles[category.theme] : themeStyles.finance;
+    const handleCommunityClick = () => {
+        if (!detailedSku) return;
+        const communityType = detailedSku.communityId === 'comm-1' || detailedSku.communityId === 'comm-2' ? 'club' : 'guild';
+        navigateTo(communityType === 'club' ? 'journeyMap' : 'communityDetail', { communityId: detailedSku.communityId });
+    }
 
     if (isLoading) return <div className="text-center p-10">Loading details...</div>
     if (!detailedSku) return <div className="text-center p-10">Could not find details for this activity.</div>
@@ -155,6 +160,7 @@ const SKUDetailView: React.FC<SKUDetailViewProps> = ({ sku, navigateTo }) => {
             
             <div className={`relative h-48 md:h-64 rounded-2xl overflow-hidden mb-8 bg-gradient-to-br ${theme.gradient}`}>
                 <div className="absolute inset-0 bg-black/20"></div>
+                 <img src={`https://picsum.photos/seed/${sku.id}/1200/400`} alt={sku.name} className="w-full h-full object-cover opacity-30"/>
                 <div className="absolute bottom-0 left-0 p-6 md:p-8">
                     {category && <p className={`font-bold ${theme.accentColor} uppercase tracking-wider`}>{category.name}</p>}
                     <h1 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-white">{sku.name}</h1>
@@ -182,33 +188,38 @@ const SKUDetailView: React.FC<SKUDetailViewProps> = ({ sku, navigateTo }) => {
                     
                     {category && <CategoryTemplate theme={category.theme} />}
                     
-                    <section>
-                         <h2 className="text-2xl font-bold mb-4">From the Community</h2>
-                         <div className="bg-white p-6 rounded-xl shadow-lg border border-slate-100">
+                    {proofOfGrowthPosts.length > 0 && (
+                        <section>
+                             <h2 className="text-2xl font-bold mb-4">Proof of Growth</h2>
                              <div className="space-y-6">
-                                {communityPosts.length > 0 ? communityPosts.map(post => {
+                                {proofOfGrowthPosts.map(post => {
                                     const author = postAuthors.get(post.authorId);
                                     return (
-                                        <div key={post.id}>
-                                            <div className="flex items-center space-x-3 mb-2">
-                                                <img src={author?.avatarUrl} alt={author?.name} className="w-10 h-10 rounded-full" />
+                                        <div key={post.id} className="bg-white p-6 rounded-xl shadow-lg border border-slate-100 transform transition-transform hover:-translate-y-1">
+                                            <div className="flex items-center space-x-3 mb-3">
+                                                <img src={author?.avatarUrl} alt={author?.name} className="w-12 h-12 rounded-full" />
                                                 <div>
                                                     <p className="font-semibold text-slate-800">{author?.name}</p>
-                                                    <p className="text-sm text-slate-500">2 days ago</p>
+                                                    <p className="text-sm text-slate-500">Shared {formatTimeAgo(post.timestamp)}</p>
                                                 </div>
                                             </div>
-                                            <p className="text-slate-700">{post.content}</p>
+                                            <p className="text-slate-700 italic">"{post.content}"</p>
+                                            {post.photos && post.photos.length > 0 && (
+                                                <div className="mt-4">
+                                                    <img src={post.photos[0]} alt="Proof of growth" className="rounded-lg shadow-md w-full object-cover"/>
+                                                </div>
+                                            )}
                                         </div>
                                     )
-                                }) : <p className="text-slate-500">Be the first to share your thoughts in the community!</p>}
+                                })}
                              </div>
-                             <div className="text-center mt-6 border-t pt-4">
-                                <button onClick={() => navigateTo('communityDetail', { communityId: sku.communityId })} className={`${theme.accentColor} font-semibold hover:underline`}>
-                                    Visit the Community &rarr;
+                             <div className="text-center mt-6">
+                                <button onClick={handleCommunityClick} className={`${theme.accentColor} font-semibold hover:underline`}>
+                                    See more in the Community &rarr;
                                 </button>
                              </div>
-                         </div>
-                    </section>
+                        </section>
+                    )}
                 </div>
 
                 <div className="lg:col-span-1 mt-12 lg:mt-0">
@@ -231,10 +242,10 @@ const SKUDetailView: React.FC<SKUDetailViewProps> = ({ sku, navigateTo }) => {
                                                         disabled={isFull}
                                                         className={`py-2 px-4 rounded-lg font-semibold text-white transition-all duration-300 text-sm ${
                                                             isFull 
-                                                            ? 'bg-amber-500 hover:bg-amber-600' 
+                                                            ? 'bg-amber-500 hover:bg-amber-600 cursor-not-allowed' 
                                                             : theme.buttonClass
                                                         } focus:outline-none focus:ring-2 focus:ring-offset-2`}>
-                                                        {isFull ? 'Join Waitlist' : 'Select'}
+                                                        {isFull ? 'Waitlist' : 'Select'}
                                                     </button>
                                                 </div>
                                             </div>

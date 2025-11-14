@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import type { Booking, Cohort, SKU } from '../types';
 import * as Icons from '../components/icons';
+import { useConcierge } from '../context/ConciergeContext';
 
 interface PassportViewProps {
     pastBookings: Booking[];
@@ -9,17 +10,39 @@ interface PassportViewProps {
 }
 
 const PassportView: React.FC<PassportViewProps> = ({ pastBookings, details, navigateTo }) => {
+    const { showNudge } = useConcierge();
 
     const completedActivities = useMemo(() => {
-        return pastBookings.map(booking => {
-            const detail = details.get(booking.cohortId);
-            if (!detail) return null;
-            return {
-                booking,
-                ...detail
-            };
-        }).filter(Boolean);
+        return pastBookings
+            .map(booking => {
+                const detail = details.get(booking.cohortId);
+                if (!detail) return null;
+                return { booking, ...detail };
+            })
+            .filter(Boolean)
+            .sort((a,b) => b!.cohort.endDateTime.getTime() - a!.cohort.endDateTime.getTime());
     }, [pastBookings, details]);
+    
+    useEffect(() => {
+        // Find the most recently completed activity to trigger a nudge
+        if (completedActivities.length > 0) {
+            const mostRecent = completedActivities[0];
+            const timeSinceCompletion = new Date().getTime() - mostRecent!.cohort.endDateTime.getTime();
+            
+            // If completed within the last day, show a nudge
+            if (timeSinceCompletion < 24 * 60 * 60 * 1000) {
+                 showNudge({
+                    message: `Congratulations on completing the ${mostRecent!.sku.name}! Why not share your key takeaways with the community?`,
+                    actionText: `Share in '${mostRecent!.sku.communityId === 'comm-1' ? 'Peak Performers' : 'Future Leaders'}'`,
+                    action: {
+                        type: 'navigate',
+                        view: 'communityDetail',
+                        data: { communityId: mostRecent!.sku.communityId }
+                    }
+                });
+            }
+        }
+    }, [completedActivities, showNudge]);
 
     if (completedActivities.length === 0) {
         return (

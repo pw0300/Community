@@ -1,4 +1,4 @@
-import type { Category, SKU, Cohort, Provider, Community, Booking, User, CommunityPost, SubCategory, SkuVariant, Milestone } from '../types';
+import type { Category, SKU, Cohort, Provider, Community, Booking, User, CommunityPost, SubCategory, SkuVariant, Milestone, CommunityResource, CommunityMemberProfile } from '../types';
 
 const providers: Provider[] = [
     { id: 'prov-1', name: 'Julianne Voyage', avatarUrl: 'https://picsum.photos/seed/julianne/100/100', onTimeStartRate: 98, isTrusted: true, rating: 4.9, bio: 'Patagonia-certified expedition leader.', quote: 'The greatest growth happens just outside your comfort zone. Let\'s find it together.', otherSkuIds: [] },
@@ -12,10 +12,12 @@ const providers: Provider[] = [
 ];
 
 const users: User[] = [
-    { id: 'user-seeker-123', name: 'Sam Seeker', avatarUrl: 'https://picsum.photos/seed/sam/100/100', role: 'seeker' },
-    { id: 'user-2', name: 'Jane Doe', avatarUrl: 'https://picsum.photos/seed/jane/100/100', role: 'seeker' },
-    { id: 'user-3', name: 'Alex Ray', avatarUrl: 'https://picsum.photos/seed/alex-ray/100/100', role: 'seeker' },
-    { id: 'user-4', name: 'Mia Wong', avatarUrl: 'https://picsum.photos/seed/mia/100/100', role: 'seeker' },
+    { id: 'user-seeker-123', name: 'Sam Seeker', avatarUrl: 'https://i.pravatar.cc/150?u=user-seeker-123', role: 'seeker' },
+    { id: 'user-2', name: 'Jane Doe', avatarUrl: 'https://i.pravatar.cc/150?u=user-2', role: 'seeker' },
+    { id: 'user-3', name: 'Alex Ray', avatarUrl: 'https://i.pravatar.cc/150?u=user-3', role: 'seeker' },
+    { id: 'user-4', name: 'Mia Wong', avatarUrl: 'https://i.pravatar.cc/150?u=user-4', role: 'seeker' },
+    { id: 'user-5', name: 'Chris Lee', avatarUrl: 'https://i.pravatar.cc/150?u=user-5', role: 'seeker' },
+    { id: 'user-6', name: 'Priya Patel', avatarUrl: 'https://i.pravatar.cc/150?u=user-6', role: 'seeker' },
 ];
 
 const getFutureDate = (days: number, hour: number = 9): Date => {
@@ -26,11 +28,11 @@ const getFutureDate = (days: number, hour: number = 9): Date => {
 };
 
 const cohorts: Cohort[] = [
-    { id: 'coh-1', skuVariantId: 'var-1', providerId: 'prov-1', startDateTime: getFutureDate(30), endDateTime: getFutureDate(44), timeZone: 'America/Santiago', capacity: 10, attendees: ['user-2', 'user-3', 'user-4'], location: 'Torres del Paine, Chile', announcements: [], chat: [], checklist: [] },
+    { id: 'coh-1', skuVariantId: 'var-1', providerId: 'prov-1', startDateTime: getFutureDate(30), endDateTime: getFutureDate(44), timeZone: 'America/Santiago', capacity: 10, attendees: ['user-2', 'user-3', 'user-4', 'user-5'], location: 'Torres del Paine, Chile', announcements: [], chat: [], checklist: [] },
     { id: 'coh-2', skuVariantId: 'var-2', providerId: 'prov-2', startDateTime: getFutureDate(7, 6), endDateTime: getFutureDate(7, 7), timeZone: 'America/New_York', capacity: 50, attendees: [], meetingUrl: 'https://zoom.us/j/1', announcements: [], chat: [], checklist: [] },
     { id: 'coh-3', skuVariantId: 'var-2', providerId: 'prov-2', startDateTime: getFutureDate(14, 6), endDateTime: getFutureDate(14, 7), timeZone: 'America/New_York', capacity: 3, attendees: ['user-2', 'user-seeker-123', 'user-4'], meetingUrl: 'https://zoom.us/j/2', announcements: [{id: 'a1', content: 'Welcome! Pre-course materials have been sent.', timestamp: new Date()}], chat: [{id:'ch1', authorId: 'user-2', content: 'Excited to start!', timestamp: new Date()}], checklist: [] },
-    { id: 'coh-4', skuVariantId: 'var-3', providerId: 'prov-3', startDateTime: getFutureDate(21, 9), endDateTime: getFutureDate(66, 17), timeZone: 'America/Chicago', capacity: 25, attendees: [], meetingUrl: 'https://teams.com/j/3', announcements: [], chat: [], checklist: [] },
-    { id: 'coh-5', skuVariantId: 'var-4', providerId: 'prov-4', startDateTime: getFutureDate(10, 9), endDateTime: getFutureDate(100, 18), timeZone: 'America/Los_Angeles', capacity: 40, attendees: [], meetingUrl: 'https://meet.google.com/j/4', announcements: [], chat: [], checklist: [] },
+    { id: 'coh-4', skuVariantId: 'var-3', providerId: 'prov-3', startDateTime: getFutureDate(21, 9), endDateTime: getFutureDate(66, 17), timeZone: 'America/Chicago', capacity: 25, attendees: ['user-6'], meetingUrl: 'https://teams.com/j/3', announcements: [], chat: [], checklist: [] },
+    { id: 'coh-5', skuVariantId: 'var-4', providerId: 'prov-4', startDateTime: getFutureDate(10, 9), endDateTime: getFutureDate(100, 18), timeZone: 'America/Los_Angeles', capacity: 40, attendees: ['user-4', 'user-5'], meetingUrl: 'https://meet.google.com/j/4', announcements: [], chat: [], checklist: [] },
     { id: 'coh-6', skuVariantId: 'var-5', providerId: 'prov-5', startDateTime: getFutureDate(5, 19), endDateTime: getFutureDate(50, 20), timeZone: 'Etc/UTC', capacity: 100, attendees: [], meetingUrl: 'https://zoom.us/j/5', announcements: [], chat: [], checklist: [] },
     { id: 'coh-7', skuVariantId: 'var-6', providerId: 'prov-6', startDateTime: getFutureDate(18, 10), endDateTime: getFutureDate(60, 16), timeZone: 'America/Los_Angeles', capacity: 30, attendees: [], meetingUrl: 'https://zoom.us/j/6', announcements: [], chat: [], checklist: [] },
     { id: 'coh-8', skuVariantId: 'var-7', providerId: 'prov-7', startDateTime: getFutureDate(9, 13), endDateTime: getFutureDate(39, 14), timeZone: 'Europe/Madrid', capacity: 60, attendees: [], meetingUrl: 'https://zoom.us/j/7', announcements: [], chat: [], checklist: [] },
@@ -51,43 +53,62 @@ const skuVariants: SkuVariant[] = [
 
 const peakPerformersJourneyMap: Milestone[] = [
     { id: 'm-1', title: 'Welcome to the Club!', type: 'community', description: 'Introduce yourself and share what you hope to achieve.' },
-    { id: 'm-2', title: 'Patagonia Expedition', type: 'sku', description: 'Your first major quest! A 14-day trek through stunning landscapes.', skuId: 'sku-1', isPrerequisite: true },
+    { id: 'm-2', title: 'Patagonia Expedition', type: 'sku', description: 'Your first major quest! A 14-day trek through stunning landscapes.', skuId: 'sku-1', isPrerequisite: true, unlocksMilestones: ['m-3', 'm-5'] },
     { id: 'm-3', title: 'Share Your Story', type: 'community', description: 'Post your favorite photo from the expedition and share a key takeaway.' },
     { id: 'm-4', title: 'Body Transformation Challenge', type: 'sku', description: 'Build the strength and endurance for your next adventure.', skuId: 'sku-8' },
     { id: 'm-5', title: 'Gear Up', type: 'community', description: 'Join the discussion on the best gear for high-altitude trekking.' },
 ];
 
+const futureLeadersResources: CommunityResource[] = [
+    { id: 'res-1', title: 'Harvard Business Review: What Makes a Leader?', type: 'article', url: '#', authorId: 'prov-3', timestamp: getFutureDate(-10) },
+    { id: 'res-2', title: 'Ray Dalio: Principles for Success (TED Talk)', type: 'video', url: '#', authorId: 'prov-3', timestamp: getFutureDate(-5) },
+    { id: 'res-3', title: 'OKR Planning Template (Notion)', type: 'tool', url: '#', authorId: 'prov-3', timestamp: getFutureDate(-2) },
+];
+
+const memberProfiles: CommunityMemberProfile[] = [
+    { userId: 'user-seeker-123', communityId: 'comm-1', badge: 'Aspiring Alpinist', about: 'Favorite trek: Roopkund. Next up: Everest Base Camp.' },
+    { userId: 'user-2', communityId: 'comm-1', badge: 'Trailblazer', about: 'Just got back from Patagonia. The views were unreal! Happy to share tips.' },
+    { userId: 'user-3', communityId: 'comm-1', badge: 'Weekend Warrior', about: 'Love finding the best local hikes. Always up for an adventure.' },
+    { userId: 'user-seeker-123', communityId: 'comm-3', badge: 'Strategic Visionary', about: 'Scaling my startup. Focused on team building and sustainable growth.' },
+    { userId: 'user-6', communityId: 'comm-3', badge: 'Emerging Leader', about: 'Transitioning into my first management role. Here to learn from the best.' },
+];
+
 const communities: Community[] = [
     {
         id: 'comm-1', name: 'Peak Performers', type: 'club', description: 'For those who push their limits in the great outdoors.', coverImageUrl: 'https://picsum.photos/seed/peak/800/200',
-        members: ['user-seeker-123', 'user-2', 'user-3'], activeNow: 18, weeklyGrowth: 12, journeyMap: peakPerformersJourneyMap,
+        members: ['user-seeker-123', 'user-2', 'user-3', 'user-4', 'user-5'], memberProfiles: memberProfiles.filter(p => p.communityId === 'comm-1'), activeNow: 24, weeklyGrowth: 12, journeyMap: peakPerformersJourneyMap,
         posts: [
-            { id: 'post-1', authorId: 'user-2', content: 'The Patagonia views were out of this world! #GrowthQuest', photos: ['https://picsum.photos/seed/patagonia1/400/300', 'https://picsum.photos/seed/patagonia2/400/300'], timestamp: getFutureDate(-2), postType: 'prompt', likes: 23, comments: [{authorId: 'user-3', text: 'Stunning!', timestamp: getFutureDate(-2)}] },
+            { id: 'post-pog-1', authorId: 'user-2', content: 'The Patagonia views were out of this world! This trip pushed all my limits and was worth every second. Can\'t wait for the next one!', photos: ['https://picsum.photos/seed/patagonia1/400/300', 'https://picsum.photos/seed/patagonia2/400/300'], timestamp: getFutureDate(-2), postType: 'proof-of-growth', relatedSkuId: 'sku-1', likes: 42, comments: [{authorId: 'user-3', text: 'Stunning! So glad we did this.', timestamp: getFutureDate(-2)}] },
             { id: 'post-ai-1', authorId: 'ai-agent', content: 'Weekly Challenge: Share your favorite trail from this past week!', isAiAgentPost: true, timestamp: getFutureDate(-1), postType: 'challenge', likes: 15, comments: [] },
         ]
     },
      {
         id: 'comm-2', name: 'Mindful Living', type: 'club', description: 'A space for wellness, meditation, and conscious living.', coverImageUrl: 'https://picsum.photos/seed/mindful/800/200',
-        members: ['user-seeker-123', 'user-4'], activeNow: 47, weeklyGrowth: 8,
+        members: ['user-seeker-123', 'user-4', 'user-6'], memberProfiles: [], activeNow: 47, weeklyGrowth: 8,
         posts: [
              { id: 'post-ai-2', authorId: 'ai-agent', content: 'Poll: How do you start your mornings?', isAiAgentPost: true, timestamp: getFutureDate(0), postType: 'poll', pollOptions: ['Meditation', 'Exercise', 'Journaling', 'Coffee & News'], likes: 55, comments: [] },
         ]
     },
     {
         id: 'comm-3', name: 'Future Leaders', type: 'guild', description: 'Connecting the next generation of business innovators.', coverImageUrl: 'https://picsum.photos/seed/leaders/800/200',
-        members: ['user-3'], activeNow: 112, weeklyGrowth: 25, posts: [{ id: 'post-2', authorId: 'user-3', content: 'Just closed a major deal using a negotiation tactic from this guild!', timestamp: getFutureDate(-3), postType: 'prompt', likes: 45, comments: [] }]
+        members: ['user-3', 'user-seeker-123', 'user-6'], memberProfiles: memberProfiles.filter(p => p.communityId === 'comm-3'), activeNow: 112, weeklyGrowth: 25, resources: futureLeadersResources,
+        posts: [
+            { id: 'post-pog-2', authorId: 'user-6', content: 'Just finished the Executive Leadership Accelerator. The ROI module was a game-changer for our Q4 planning. Here\'s a snapshot of our new growth dashboard!', photos: ['https://picsum.photos/seed/dashboard/400/300'], timestamp: getFutureDate(-3), postType: 'proof-of-growth', relatedSkuId: 'sku-3', likes: 61, comments: [] },
+            { id: 'post-q1', authorId: 'user-seeker-123', content: 'What are the best frameworks for providing upward feedback to management?', timestamp: getFutureDate(-1), postType: 'question', likes: 12, comments: [{authorId: 'prov-3', text: 'Great question! The Situation-Behavior-Impact (SBI) model is a fantastic, non-confrontational start. I\'ve added an article on it to the Resources tab.', timestamp: getFutureDate(0)}] },
+            { id: 'post-res1', authorId: 'prov-3', content: 'New Resource Added: The SBI Feedback Model', timestamp: getFutureDate(0), postType: 'resource', likes: 22, comments: []},
+        ]
     },
     {
         id: 'comm-4', name: 'Dev Den', type: 'guild', description: 'Code, collaborate, and create with fellow developers.', coverImageUrl: 'https://picsum.photos/seed/dev/800/200',
-        members: ['user-4'], activeNow: 230, weeklyGrowth: 18, posts: [{ id: 'post-3', authorId: 'user-4', content: 'Live now: AMA with a senior engineer from Google!', timestamp: getFutureDate(0), postType: 'prompt', likes: 130, comments: [] }]
+        members: ['user-4', 'user-5'], memberProfiles: [], activeNow: 230, weeklyGrowth: 18, posts: [{ id: 'post-3', authorId: 'user-4', content: 'Live now: AMA with a senior engineer from Google!', timestamp: getFutureDate(0), postType: 'prompt', likes: 130, comments: [] }]
     },
     {
         id: 'comm-5', name: 'The Sound Stage', type: 'club', description: 'For musicians, producers, and audio engineers.', coverImageUrl: 'https://picsum.photos/seed/sound/800/200',
-        members: [], activeNow: 65, weeklyGrowth: 5, posts: []
+        members: [], memberProfiles: [], activeNow: 65, weeklyGrowth: 5, posts: []
     },
     {
         id: 'comm-6', name: 'Wealth Architects', type: 'guild', description: 'Building financial freedom through smart strategies.', coverImageUrl: 'https://picsum.photos/seed/wealth-arch/800/200',
-        members: ['user-seeker-123'], activeNow: 98, weeklyGrowth: 15, posts: [{ id: 'post-4', authorId: 'ai-agent', isAiAgentPost: true, content: 'Best 1-day trek near Lonavala?', timestamp: getFutureDate(0), postType: 'prompt', likes: 2, comments: [] }]
+        members: ['user-seeker-123', 'user-2'], memberProfiles: [], activeNow: 98, weeklyGrowth: 15, posts: [{ id: 'post-4', authorId: 'ai-agent', isAiAgentPost: true, content: 'A member just shared a great article on diversification. What\'s one investing principle you live by?', timestamp: getFutureDate(0), postType: 'prompt', likes: 2, comments: [] }]
     },
 ];
 
@@ -229,7 +250,7 @@ export const mockApi = {
         }
         if (userId === 'ai-agent') {
             return {
-                 id: 'ai-agent', name: 'Community AI Agent', avatarUrl: 'https://picsum.photos/seed/ai/100/100', role: 'seeker'
+                 id: 'ai-agent', name: 'Community AI Agent', avatarUrl: 'https://i.pravatar.cc/150?u=ai-agent', role: 'seeker'
             }
         }
         return undefined;
@@ -247,6 +268,10 @@ export const mockApi = {
         const data = deepCopy(community);
         hydrateDates(data, ['timestamp']);
         return data;
+    },
+    getCommunityMemberProfile: async(userId: string, communityId: string): Promise<CommunityMemberProfile | undefined> => {
+        await delay(50);
+        return memberProfiles.find(p => p.userId === userId && p.communityId === communityId);
     },
     getUserCommunities: async (userId: string): Promise<Community[]> => {
         await delay(200);

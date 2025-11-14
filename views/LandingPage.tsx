@@ -10,13 +10,13 @@ interface LandingPageProps {
 }
 
 const sectionVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 30 },
     visible: {
         opacity: 1,
         y: 0,
         transition: {
-            duration: 0.6,
-            ease: 'easeOut'
+            duration: 0.8,
+            ease: [0.6, 0.01, 0.05, 0.95]
         }
     }
 };
@@ -27,6 +27,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ navigateTo }) => {
     const [skus, setSkus] = useState<SKU[]>([]);
     const [view, setView] = useState<'clubs' | 'guilds'>('clubs');
     const [aiSnippets, setAiSnippets] = useState<Map<string, string>>(new Map());
+    const [snippetsLoading, setSnippetsLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -42,6 +43,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ navigateTo }) => {
         };
         
         const generateAllSnippets = async (comms: Community[]) => {
+            setSnippetsLoading(true);
             const snippetPromises = comms.map(community =>
                 generateCommunitySnippet(community.name, community.posts.slice(0, 3))
                     .then(snippet => ({ communityId: community.id, snippet }))
@@ -58,6 +60,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ navigateTo }) => {
                 });
                 return newSnippets;
             });
+            setSnippetsLoading(false);
         };
 
         fetchData();
@@ -78,40 +81,22 @@ const LandingPage: React.FC<LandingPageProps> = ({ navigateTo }) => {
                 animate="visible"
                 variants={sectionVariants}
             >
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
-                    <div className="grid md:grid-cols-2 gap-12 items-center">
-                        {/* The Club */}
-                        <div className="text-center md:text-left">
-                            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tighter text-slate-900">
-                                Find Your <span className="text-teal-500">People.</span>
-                            </h1>
-                            <p className="mt-4 text-lg text-slate-600 max-w-md mx-auto md:mx-0">
-                                Join member-led clubs for travel, wellness, and celebration.
-                            </p>
-                            <img src="https://picsum.photos/seed/hike-club/600/400" alt="People hiking" className="mt-6 rounded-2xl shadow-xl w-full" />
-                        </div>
-                        {/* The Guild */}
-                        <div className="text-center md:text-left">
-                             <img src="https://picsum.photos/seed/coding-guild/600/400" alt="People in a workshop" className="mb-6 rounded-2xl shadow-xl w-full" />
-                             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tighter text-slate-900">
-                                Find Your <span className="text-amber-500">Guild.</span>
-                            </h1>
-                            <p className="mt-4 text-lg text-slate-600 max-w-md mx-auto md:mx-0">
-                                Access expert-led guilds to accelerate your wealth and career.
-                            </p>
-                        </div>
-                    </div>
-                    <div className="mt-16 max-w-2xl mx-auto">
-                        <div className="relative">
-                            <input
-                                type="text"
-                                placeholder='🔍 Search for a community (e.g., "Trekking", "F/O Trading")'
-                                className="w-full py-4 pl-6 pr-32 text-lg border-2 border-slate-200 rounded-full focus:ring-2 focus:ring-teal-400 focus:border-teal-400 outline-none transition"
-                            />
-                            <button onClick={() => navigateTo('onboarding')} className="absolute top-1/2 right-2 -translate-y-1/2 bg-teal-500 text-white font-semibold py-3 px-6 rounded-full hover:bg-teal-600 transition-all transform hover:scale-105">
-                                Search
-                            </button>
-                        </div>
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24 text-center">
+                    <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-slate-900 !leading-tight">
+                        Stop Searching. <br/> Start <span className="text-teal-500">Becoming.</span>
+                    </h1>
+                    <p className="mt-6 text-lg md:text-xl text-slate-600 max-w-2xl mx-auto">
+                        GrowthQuest is a curated marketplace of services, powered by communities and guided by AI, to help you achieve your personal and professional growth goals.
+                    </p>
+                    <div className="mt-10 max-w-xl mx-auto">
+                        <motion.button 
+                            onClick={() => navigateTo('onboarding')} 
+                            className="w-full bg-teal-500 text-white font-bold py-4 px-8 text-lg rounded-full shadow-lg shadow-teal-500/30"
+                            whileHover={{ scale: 1.05, y: -2, boxShadow: "0 20px 25px -5px rgba(20, 184, 166, 0.2), 0 8px 10px -6px rgba(20, 184, 166, 0.2)" }}
+                            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                        >
+                           Find Your Community in 60 Seconds
+                        </motion.button>
                     </div>
                 </div>
             </motion.section>
@@ -142,7 +127,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ navigateTo }) => {
                     </div>
                 </div>
             </motion.section>
-
+            
             {/* Section 3: How It Works */}
             <motion.section 
                 id="how-it-works"
@@ -153,7 +138,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ navigateTo }) => {
                 variants={sectionVariants}
             >
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight">A Simpler Path to Growth</h2>
+                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight">A Smarter Path to Growth</h2>
                     <div className="mt-12 grid md:grid-cols-3 gap-8 md:gap-12">
                         <div className="flex flex-col items-center">
                             <div className="bg-teal-100 text-teal-600 rounded-full h-16 w-16 flex items-center justify-center text-2xl font-bold">1</div>
@@ -216,7 +201,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ navigateTo }) => {
                                         key={community.id} 
                                         className="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col group cursor-pointer" 
                                         whileHover={{ y: -5, shadow: 'xl' }}
-                                        onClick={() => navigateTo('communityDetail', { communityId: community.id })}
+                                        onClick={() => navigateTo(community.type === 'club' ? 'journeyMap' : 'communityDetail', { communityId: community.id })}
                                     >
                                         <div className="relative h-48">
                                             <img src={community.coverImageUrl} alt={community.name} className="w-full h-full object-cover" />
@@ -230,10 +215,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ navigateTo }) => {
                                                 <UsersIcon className="w-4 h-4" />
                                                 <span>{community.members.length}+ Members</span>
                                             </div>
-                                            <div className="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200 text-sm">
+                                            <div className="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200 text-sm h-20 flex flex-col justify-center">
                                                 <p className="font-semibold text-amber-800">Live Activity:</p>
                                                 <p className="text-amber-700 italic">
-                                                    {aiSnippets.get(community.id) || <span className="animate-pulse">Generating snippet...</span>}
+                                                    {snippetsLoading ? (
+                                                        <span className="animate-pulse">Generating snippet...</span>
+                                                    ) : (
+                                                        aiSnippets.get(community.id) || `Join the conversation in ${community.name}!`
+                                                    )}
                                                 </p>
                                             </div>
                                         </div>
@@ -261,16 +250,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ navigateTo }) => {
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <h2 className="text-3xl md:text-4xl font-bold text-center tracking-tight">Don't Miss Out</h2>
                     <div className="mt-12 max-w-2xl mx-auto space-y-4">
-                        {/* Hardcoded events for demo */}
                         <div className="bg-slate-50 p-4 rounded-lg flex items-center justify-between transition-shadow hover:shadow-md">
                             <div className="flex items-center space-x-4">
                                 <div className="text-center bg-white p-2 rounded-md border">
                                     <p className="font-bold text-amber-600 text-sm">NOV</p>
-                                    <p className="font-bold text-xl">15</p>
+                                    <p className="font-bold text-xl">28</p>
                                 </div>
                                 <div>
                                     <h3 className="font-bold">AMA: Gut Health & You</h3>
-                                    <p className="text-sm text-slate-500">with Dr. Priya Singh from 'Wellness Warriors'</p>
+                                    <p className="text-sm text-slate-500">with Dr. Priya Singh from 'Mindful Living'</p>
                                 </div>
                             </div>
                             <button onClick={() => navigateTo('onboarding')} className="bg-amber-400 text-amber-900 font-semibold py-2 px-4 rounded-lg hover:bg-amber-500 transition-colors">Join to RSVP</button>
@@ -278,8 +266,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ navigateTo }) => {
                          <div className="bg-slate-50 p-4 rounded-lg flex items-center justify-between transition-shadow hover:shadow-md">
                             <div className="flex items-center space-x-4">
                                 <div className="text-center bg-white p-2 rounded-md border">
-                                    <p className="font-bold text-amber-600 text-sm">NOV</p>
-                                    <p className="font-bold text-xl">18</p>
+                                    <p className="font-bold text-amber-600 text-sm">DEC</p>
+                                    <p className="font-bold text-xl">02</p>
                                 </div>
                                 <div>
                                     <h3 className="font-bold">Live Trading Session</h3>
@@ -321,7 +309,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ navigateTo }) => {
                                  </div>
                                  <div className="p-6 pt-0">
                                      <button 
-                                        onClick={() => community && navigateTo('communityDetail', { communityId: community.id })}
+                                        onClick={() => community && navigateTo(community.type === 'club' ? 'journeyMap' : 'communityDetail', { communityId: community.id })}
                                         className="w-full text-center bg-teal-500 text-white font-semibold py-3 px-4 rounded-lg group-hover:bg-teal-600 transition-colors"
                                     >
                                          Join '{community ? community.name : ''}' to Unlock

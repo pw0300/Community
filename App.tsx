@@ -1,7 +1,6 @@
-
-
 import React, { useState } from 'react';
 import { AppProvider } from './context/AppContext';
+import { ConciergeProvider } from './context/ConciergeContext';
 import Header from './components/Header';
 import DiscoverView from './views/DiscoverView';
 import SKUDetailView from './views/SKUDetailView';
@@ -14,10 +13,11 @@ import JourneyMapView from './views/JourneyMapView';
 import GuideDashboard from './views/provider/GuideDashboard';
 import PartnerDashboard from './views/provider/PartnerDashboard';
 import ConciergeAgent from './components/ConciergeAgent';
+import ConciergeNudge from './components/ConciergeNudge';
 import LandingPage from './views/LandingPage';
 import LandingHeader from './components/LandingHeader';
 import LandingFooter from './components/LandingFooter';
-import OnboardingView from './views/OnboardingView';
+import GenerativeOnboardingView from './views/GenerativeOnboardingView';
 import type { SKU } from './types';
 
 const App: React.FC = () => {
@@ -66,7 +66,7 @@ const App: React.FC = () => {
             case 'journeyMap':
                 return selectedCommunityId ? <JourneyMapView communityId={selectedCommunityId} navigateTo={navigateTo} /> : <CommunityHubView navigateTo={navigateTo} />;
              case 'onboarding':
-                return <OnboardingView navigateTo={navigateTo} />;
+                return <GenerativeOnboardingView navigateTo={navigateTo} />;
             default:
                 return <DiscoverView navigateTo={navigateTo} />;
         }
@@ -84,18 +84,17 @@ const App: React.FC = () => {
     
     if (currentView === 'landing') {
         return (
-            <AppProvider>
-                <div className="bg-white text-slate-800 antialiased">
-                    <LandingHeader navigateTo={navigateTo} />
-                    <LandingPage navigateTo={navigateTo} />
-                    <LandingFooter />
-                </div>
-            </AppProvider>
+            <div className="bg-white text-slate-800 antialiased">
+                <LandingHeader navigateTo={navigateTo} />
+                <LandingPage navigateTo={navigateTo} />
+                <LandingFooter />
+            </div>
         );
     }
 
     return (
         <AppProvider>
+          <ConciergeProvider>
             <div className="min-h-screen bg-gray-50 font-sans">
                 <Header 
                   userMode={userMode} 
@@ -104,11 +103,13 @@ const App: React.FC = () => {
                   setProviderRole={setProviderRole}
                   navigateTo={navigateTo} 
                 />
-                <main className="container mx-auto p-4 md:p-6 lg:p-8">
+                <main className="container mx-auto p-4 md:p-6 lg:p-8 relative">
                     {userMode === 'seeker' ? renderSeekerView() : renderProviderView()}
                 </main>
                 {userMode === 'seeker' && <ConciergeAgent navigateTo={navigateTo} />}
+                <ConciergeNudge navigateTo={navigateTo} />
             </div>
+          </ConciergeProvider>
         </AppProvider>
     );
 };

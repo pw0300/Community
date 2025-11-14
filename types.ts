@@ -14,6 +14,13 @@ export interface User {
   };
 }
 
+export interface CommunityMemberProfile {
+    userId: string;
+    communityId: string;
+    badge: string; // e.g., "Aspiring Alpinist"
+    about: string; // e.g., "Favorite trek: Roopkund. Next up: Everest Base Camp."
+}
+
 export interface Category {
   id: string;
   name: string;
@@ -68,7 +75,7 @@ export interface Cohort {
 }
 
 export interface Provider {
-    id: string;
+    id:string;
     name: string;
     avatarUrl: string;
     onTimeStartRate: number;
@@ -86,6 +93,16 @@ export interface Milestone {
     description: string;
     skuId?: string; // only for sku type
     isPrerequisite?: boolean;
+    unlocksMilestones?: string[]; // IDs of milestones unlocked by this one
+}
+
+export interface CommunityResource {
+    id: string;
+    title: string;
+    type: 'article' | 'video' | 'tool';
+    url: string;
+    authorId: string;
+    timestamp: Date;
 }
 
 export interface Community {
@@ -95,10 +112,12 @@ export interface Community {
     coverImageUrl: string;
     type: 'club' | 'guild';
     members: string[]; // array of user IDs
+    memberProfiles: CommunityMemberProfile[];
     posts: CommunityPost[];
     activeNow: number;
     weeklyGrowth: number;
     journeyMap?: Milestone[];
+    resources?: CommunityResource[];
 }
 
 export interface CommunityPost {
@@ -108,7 +127,8 @@ export interface CommunityPost {
     timestamp: Date;
     photos?: string[];
     isAiAgentPost?: boolean;
-    postType: 'prompt' | 'poll' | 'spotlight' | 'challenge';
+    postType: 'prompt' | 'poll' | 'spotlight' | 'challenge' | 'question' | 'resource' | 'proof-of-growth';
+    relatedSkuId?: string; // Used for 'proof-of-growth' type
     pollOptions?: string[];
     likes: number;
     comments: { authorId: string; text: string; timestamp: Date }[];
@@ -145,4 +165,15 @@ export interface ChecklistItem {
     id: string;
     text: string;
     completed: boolean;
+}
+
+export interface ConciergeNudge {
+    id: string;
+    message: string;
+    actionText?: string;
+    action?: {
+        type: 'navigate';
+        view: string;
+        data?: any;
+    }
 }
